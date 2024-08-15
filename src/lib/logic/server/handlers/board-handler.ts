@@ -85,5 +85,16 @@ export const boardHandler: CategoryHandler<BoardMessageCategory> = {
 		return {
 			forwardedResponse: payload
 		};
+	},
+
+	handleDiceRoll: async (payload, { dispatcher }) => {
+		//TODO figure out the visibility aspect. Easy mode would be to just let the client determine visibility
+		return {
+			rolls: {
+				repeat: payload.repeat,
+				sides: payload.sides,
+				results: Array.from({ length: payload.repeat }, () => Math.floor(Math.random() * payload.sides) + 1)
+			}
+		};
 	}
 };

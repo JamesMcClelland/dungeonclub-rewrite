@@ -1,7 +1,8 @@
 <script lang="ts">
     import {FontAwesomeIcon} from "@fortawesome/svelte-fontawesome";
+    import { socket } from 'client/communication';
 
-    const diceOptions = [
+    const sidesList = [
         4,
         6,
         8,
@@ -16,12 +17,16 @@
     let visibility = 'Private'
     let icon = 'fa-user-lock';
 
-    function rollDice(die: string, amount: number) {
-        console.log(`Rolling ${amount} ${die} dice`);
+    async function rollDice(sides: string, repeat: number) {
+        console.log(`Rolling ${repeat} ${sides} dice`);
 
-        const rolls = Array.from({ length: amount }, () => Math.floor(Math.random() * parseInt(die)) + 1);
+        const response = await $socket.request('diceRoll', {
+            visibility,
+            sides,
+            repeat,
+        });
 
-        console.log('Rolls', rolls);
+        console.log('Rolls', response);
     }
 
     function updateVisibility() {
@@ -49,13 +54,13 @@
             <th>Die</th>
             <th colspan={diceAmounts}>Amount</th>
         </tr>
-        {#each diceOptions as dice }
+        {#each sidesList as sides }
             <tr>
                 <td>
-                    d{dice}
+                    d{sides}
                 </td>
                 {#each Array.from({ length: diceAmounts }) as _, i}
-                    <td class="dice-option" on:click={() => rollDice(dice, i + 1)}>
+                    <td class="dice-option" on:click={() => rollDice(sides,i + 1)}>
                         {i+1}
                     </td>
                 {/each}
